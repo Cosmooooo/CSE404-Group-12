@@ -29,3 +29,10 @@ def get_frames(root, file):
         frames.append(image)
         success,image = video.read()
     return frames
+
+def get_starting_frame(root, file):
+    video = cv2.VideoCapture(root+file)
+    if not video.isOpened():
+        raise Exception("Could not open video")
+    success,image = video.read()
+    return image
