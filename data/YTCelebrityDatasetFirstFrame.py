@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset
-from data.load_data import get_starting_frame
+from data.data import get_starting_frame
 from torchvision import transforms
 import numpy as np
 import csv
@@ -17,7 +17,6 @@ class YTCelebrityDatasetFirstFrame(Dataset):
         if self.transform is None:
             self.transform = transforms.Compose([
                 transforms.ToPILImage(),
-                transforms.Resize((128, 128)),
                 transforms.ToTensor()
             ])
         for file_name in os.listdir(self.root):

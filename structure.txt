@@ -1,0 +1,17 @@
+Project
+├── celebrity.csv
+├── checkpoints
+├── CSE404.ipynb
+├── data
+│   ├── data.py
+│   ├── process.py
+│   ├── write_data.m
+│   ├── YTCelebrityDatasetFirstFrame.py
+│   └── YTCelebrityDataset.py
+├── main.py
+├── models
+│   ├── shared.py
+│   └── SimpleCNN.py
+└── README.md
+
+5 directories, 11 files
