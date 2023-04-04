@@ -17,6 +17,7 @@ class YTCelebrityDatasetFirstFrame(Dataset):
         if self.transform is None:
             self.transform = transforms.Compose([
                 transforms.ToPILImage(),
+                transforms.Resize((360, 360)),
                 transforms.ToTensor()
             ])
         for file_name in os.listdir(self.root):
@@ -25,7 +26,7 @@ class YTCelebrityDatasetFirstFrame(Dataset):
             file = "_".join([first_name, last_name, video_id, clip_id])
             self.data.append(file)
             image = get_starting_frame(self.root, file_name)
-            self.image[file] = self.transform(image)
+            self.image[file] = image
 
         with open (csv_path) as f:
             reader = csv.reader(f)
@@ -34,6 +35,9 @@ class YTCelebrityDatasetFirstFrame(Dataset):
                 name, label = row[0].split(".")[0], row[1:5]
                 _, first_name, last_name, video_id, clip_id = name.split("_")
                 self.label["_".join([first_name, last_name, video_id, clip_id])] = torch.from_numpy(np.asarray(label).astype(np.float32))
+        for file in self.data:
+            self.image[file], self.label[file] = self.transform(self.image[file]), self.label[file]
+        
         
     def __len__(self):
         return len(self.data)

@@ -26,9 +26,15 @@ IOU is calculated to be intersection area / union area of prediction and group t
 
 L1 loss is calculated by l1 distance of four elements between prediction and label. We expect l1 loss to be as lower as possible.
 
-![Alt text](SimpleCNN.png)
+![Alt text](results/SimpleCNN.png)
 
 Test IOU: 0.03165 Loss: 921.00452
+
+![Alt text](results/ResNet.png)
+
+Test IOU: 0.13269 Loss: 297.79752
+
+![Alt text](results/test.png)
 
 ### [Structure](structure.txt)
 

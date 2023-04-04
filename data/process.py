@@ -27,7 +27,7 @@ def draw_square_by_points(image, points, **params):
     last_x, last_y = points[-1]
     
     if "color" not in params:
-        params["color"] = (0, 0, 0)
+        params["color"] = (255, 0, 0)
     if "thickness" not in params:
         params["thickness"] = 2
 
@@ -223,3 +223,4 @@ def get_iou(square_A, square_B):
     if inter_area > union_area:
         raise Exception(f"inter {inter_area}, union {union_area}")        
     return abs(inter_area / union_area)
+

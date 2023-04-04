@@ -2,6 +2,7 @@ import torch
 import os, sys
 from tqdm import tqdm
 from data.process import get_iou, get_bounding_box
+from torchvision import transforms
 
 def train(model, device, train_loader, optimizer, epoch, validate=False, validation_loader=None):
     model.train()
@@ -31,18 +32,19 @@ def train(model, device, train_loader, optimizer, epoch, validate=False, validat
         train_l1_track.append(train_l1_score.item())
 
         if validate:
-            val_iou_score, val_l1_score = 0, 0
+            with torch.no_grad():
+                val_iou_score, val_l1_score = 0, 0
 
-            for _, (image, label) in enumerate(validation_loader):
-                image, label = image.to(device), label.to(device)
-                prediction = model(image)
-                val_iou_score += get_iou_score(prediction, label)
-                val_l1_score += l1_loss(prediction, label).item()
+                for _, (image, label) in enumerate(validation_loader):
+                    image, label = image.to(device), label.to(device)
+                    prediction = model(image)
+                    val_iou_score += get_iou_score(prediction, label)
+                    val_l1_score += l1_loss(prediction, label).item()
 
-            val_iou_score /= len(validation_loader)
-            val_l1_score /= len(validation_loader)
-            val_iou_track.append(val_iou_score)
-            val_l1_track.append(val_l1_score)
+                val_iou_score /= len(validation_loader)
+                val_l1_score /= len(validation_loader)
+                val_iou_track.append(val_iou_score)
+                val_l1_track.append(val_l1_score)
         
         pbar.update(1)
         if validate:
@@ -70,11 +72,15 @@ def test(model, device, test_loader):
 
     return test_iou_score / len(test_loader), test_l1_score.item()
 
-def predict_image(model, device, image):
+def predict_image(model, image):
     model.eval()
-    model = model.to(device)
+    transform = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.Resize((360, 360)),
+            transforms.ToTensor()
+        ])
     with torch.no_grad():
-        image = image[None, :].to(device)
+        image = transform(image)[None, :]
         prediction = model(image)
     return prediction[0]
             
@@ -89,14 +95,10 @@ def get_iou_score(prediction, label):
     return iou_score / len(prediction)
 
 def save_model(model, path):
-    root = 'checkpoints/'
-    if not os.path.exists(root):
-        os.makedirs(root)
-    torch.save(model.state_dict(), root+path)
+    torch.save(model.state_dict(), path)
 
 def load_model(model, path):
-    root = 'checkpoints/'
-    model.load_state_dict(torch.load(root+path))
+    model.load_state_dict(torch.load(path))
     return model
 
     

@@ -12,7 +12,6 @@ def save_frames(root, file, output_dir):
     success,image = video.read()
     count = 0
     while success:
-        image = cv2.copyMakeBorder(image, 0, 360 - image.shape[0], 0, 360 - image.shape[1], 0)
         output_file = output_dir + file + "/{count}.jpg"
         if not cv2.imwrite(output_file, image):
             raise Exception("Could not write image")
@@ -27,7 +26,6 @@ def get_frames(root, file):
         raise Exception("Could not open video")
     success,image = video.read()
     while success:
-        image = cv2.copyMakeBorder(image, 0, 360 - image.shape[0], 0, 360 - image.shape[1], 0)
         frames.append(image)
         success,image = video.read()
     return frames
@@ -38,5 +36,4 @@ def get_starting_frame(root, file):
     if not video.isOpened():
         raise Exception("Could not open video")
     _,image = video.read()
-    image = cv2.copyMakeBorder(image, 0, 360 - image.shape[0], 0, 360 - image.shape[1], 0)
     return image

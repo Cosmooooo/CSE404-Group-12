@@ -3,8 +3,9 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from data.YTCelebrityDatasetFirstFrame import YTCelebrityDatasetFirstFrame
 from data.process import draw_square_by_points, get_bounding_box
-from models.shared import *
+from models.ResNet import ResNet
 from models.SimpleCNN import SimpleCNN
+from models.shared import *
 import matplotlib.pyplot as plt
 import argparse, sys
 
@@ -21,16 +22,10 @@ def get_parser(**params):
         else:
             raise argparse.ArgumentTypeError("Boolean value expected.")
         
-    def get_model(s):
-        if s.lower() in ("simplecnn"):
-            return SimpleCNN()
-        else:
-            raise argparse.ArgumentTypeError("Model not found.")
-        
     parser = argparse.ArgumentParser(**params)
     
     # hyperparameters
-    parser.add_argument('--batch_size', type=int, default=32, help='batch size')
+    parser.add_argument('--batch-size', type=int, default=32, help='batch size')
     parser.add_argument('--epoch', type=int, default=100, help='epoch')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
     parser.add_argument('--validate', type=str_to_bool, default=False, help='validate or not')
@@ -40,7 +35,7 @@ def get_parser(**params):
     parser.add_argument('--csv', type=str, default="celebrity.csv", help='csv path of dataset')
 
     # load model
-    parser.add_argument('--model', type=get_model, default="simplecnn", help='save checkpoint path')
+    parser.add_argument('--model', type=str, default="simplecnn", help='save checkpoint path')
     parser.add_argument('--ckpt', type=str, default=None, help='load checkpoint path')
     
     return parser
@@ -57,13 +52,23 @@ def main():
     learning_rate = opt.lr
     validate = opt.validate
 
+    def get_model(s):
+        if s.lower() == "simplecnn":
+            return SimpleCNN()
+        elif s.lower() == "resnet":
+            return ResNet()
+        else:
+            raise argparse.ArgumentTypeError("Model not found.")
+        
+    model = get_model(opt.model).to(device)
     ckpt = opt.ckpt
-    model = opt.model.to(device)
+
     if ckpt is not None:
         model = load_model(ckpt)
 
     dataset = YTCelebrityDatasetFirstFrame(root, csv_path)
-    optimizer = optim.SGD(model.parameters(), lr=learning_rate)
+    # optimizer = optim.SGD(model.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     sys.stdout.write("\nSplitting...")
     generator = torch.Generator().manual_seed(41)
@@ -89,10 +94,23 @@ def main():
         axs[1].plot(val_l1_track, label="Val_l1")
     axs[0].legend()
     axs[1].legend()
-    plt.savefig(f'{model.__class__.__name__}.png')
-    save_model(model, f'{model.__class__.__name__}_{epoch}.pth')
+    plt.savefig(f'results/{model.__class__.__name__}.png')
+    save_model(model, f'checkpoints/{model.__class__.__name__}_{epoch}.pth')
 
     sys.stdout.write("\nTesting...")
     test_iou, test_l1 = test(model, device, test_loader)
 
 main()
+# from data.data import get_starting_frame
+# from data.process import draw_square_by_label
+# import cv2
+
+
+# root = "/media/cosmo/Dataset/YTCelebrity/ytcelebrity/"
+# video = "0089_02_010_al_gore.avi"
+# image = get_starting_frame(root, video)
+# model = ResNet()
+# model = load_model(model, "checkpoints/ResNet_200.pth")
+# prediction = predict_image(model, image)
+# image = draw_square_by_label(image, *prediction.numpy())
+# cv2.imwrite("results/test.png", image)
