@@ -221,6 +221,6 @@ def get_iou(square_A, square_B):
     inter_area = int(get_intersection_area(square_A, square_B))
     union_area = total_area - inter_area
     if inter_area > union_area:
-        raise Exception(f"inter {inter_area}, union {union_area}")        
+        raise Exception(f"Intersection area is greater than Union area. inter {inter_area}, union {union_area}")        
     return abs(inter_area / union_area)
 
