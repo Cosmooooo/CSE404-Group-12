@@ -28,15 +28,23 @@ L1 loss is calculated by l1 distance of four elements between prediction and lab
 
 ![Alt text](results/SimpleCNN.png)
 
-Test IOU: 0.03165 Loss: 921.00452
+Test IOU: 0.03165 Loss: 28.78139
 
 ![Alt text](results/ResNet.png)
 
-Test IOU: 0.13269 Loss: 297.79752
+Test IOU: 0.13269 Loss: 18.61234
 
 ![Alt text](results/Yolo.png)
 
-Test IOU: 0.09364 Loss: 614.48291
+Test IOU: 0.09364 Loss: 19.20259
+
+![Alt text](results/VGG.png)
+
+Test IOU: 0.15020 loss: 8.76502
+
+![Alt text](results/LeNet.png)
+
+Test IOU: 0.13438 loss: 9.90049
 
 ![Alt text](results/test.png)
 

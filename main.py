@@ -6,6 +6,8 @@ from data.process import draw_square_by_points, get_bounding_box
 from models.ResNet import ResNet
 from models.SimpleCNN import SimpleCNN
 from models.Yolo import Yolo
+from models.VGG import VGG
+from models.LeNet import LeNet
 from models.shared import *
 import matplotlib.pyplot as plt
 import argparse, sys
@@ -36,7 +38,7 @@ def get_parser(**params):
     parser.add_argument('--csv', type=str, default="celebrity.csv", help='csv path of dataset')
 
     # load model
-    parser.add_argument('--model', type=str, default="simplecnn", help='save checkpoint path')
+    parser.add_argument('--model', type=str, default="lenet", help='save checkpoint path')
     parser.add_argument('--ckpt', type=str, default=None, help='load checkpoint path')
     
     return parser
@@ -54,12 +56,9 @@ def main():
     validate = opt.validate
 
     def get_model(s):
-        if s.lower() == "simplecnn":
-            return SimpleCNN()
-        elif s.lower() == "resnet":
-            return ResNet()
-        elif s.lower() == "yolo":
-            return Yolo()
+        models = {"simplecnn": SimpleCNN(), "vgg": VGG(), "resnet": ResNet(), "yolo": Yolo(), "lenet": LeNet()}
+        if s.lower() in models:
+            return models[s.lower()]
         else:
             raise argparse.ArgumentTypeError("Model not found.")
         
@@ -110,10 +109,10 @@ main()
 
 
 # root = "/media/cosmo/Dataset/YTCelebrity/ytcelebrity/"
-# video = "0232_01_006_anderson_cooper.avi"
+# video = "0439_02_025_bill_clinton.avi"
 # image = get_starting_frame(root, video)
-# model = ResNet()
-# model = load_model(model, "checkpoints/ResNet_200.pth")
+# model = LeNet()
+# model = load_model(model, "checkpoints/LeNet_150.pth")
 # prediction = predict_image(model, image)
 # image = draw_square_by_label(image, *prediction.numpy())
 # cv2.imwrite("results/test.png", image)

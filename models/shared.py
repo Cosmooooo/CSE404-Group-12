@@ -65,12 +65,14 @@ def test(model, device, test_loader):
         for _, (image, label) in enumerate(test_loader):
             image, label = image.to(device), label.to(device)
             prediction = model(image)
-            test_iou_score += get_iou_score(prediction, label) / len(label)
+            test_iou_score += get_iou_score(prediction, label)
             test_l1_score += l1_loss(prediction, label)
 
+    test_iou_score /= len(test_loader)
+    test_l1_score /= len(test_loader)
     sys.stdout.write(f"Test iou: {test_iou_score:.5f} loss: {test_l1_score:.5f}")
 
-    return test_iou_score / len(test_loader), test_l1_score.item()
+    return test_iou_score, test_l1_score
 
 def predict_image(model, image):
     model.eval()
