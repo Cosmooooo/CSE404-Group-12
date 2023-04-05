@@ -5,6 +5,7 @@ from data.YTCelebrityDatasetFirstFrame import YTCelebrityDatasetFirstFrame
 from data.process import draw_square_by_points, get_bounding_box
 from models.ResNet import ResNet
 from models.SimpleCNN import SimpleCNN
+from models.Yolo import Yolo
 from models.shared import *
 import matplotlib.pyplot as plt
 import argparse, sys
@@ -57,6 +58,8 @@ def main():
             return SimpleCNN()
         elif s.lower() == "resnet":
             return ResNet()
+        elif s.lower() == "yolo":
+            return Yolo()
         else:
             raise argparse.ArgumentTypeError("Model not found.")
         
@@ -107,7 +110,7 @@ main()
 
 
 # root = "/media/cosmo/Dataset/YTCelebrity/ytcelebrity/"
-# video = "0089_02_010_al_gore.avi"
+# video = "0232_01_006_anderson_cooper.avi"
 # image = get_starting_frame(root, video)
 # model = ResNet()
 # model = load_model(model, "checkpoints/ResNet_200.pth")
