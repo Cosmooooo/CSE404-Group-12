@@ -19,9 +19,9 @@ def save_frames(root, file, output_dir):
         count += 1
         
 ## Get frames from video
-def get_frames(root, file):
+def get_frames(path):
     frames = [] 
-    video = cv2.VideoCapture(root+file)
+    video = cv2.VideoCapture(path)
     if not video.isOpened():
         raise Exception("Could not open video")
     success,image = video.read()
@@ -31,8 +31,8 @@ def get_frames(root, file):
     return frames
 
 ## Get starting frame from video
-def get_starting_frame(root, file):
-    video = cv2.VideoCapture(root+file)
+def get_starting_frame(path):
+    video = cv2.VideoCapture(path)
     if not video.isOpened():
         raise Exception("Could not open video")
     _,image = video.read()

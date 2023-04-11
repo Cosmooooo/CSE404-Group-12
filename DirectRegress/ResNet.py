@@ -25,7 +25,7 @@ class ResBlock(nn.Module):
         return out
 
 class ResNet(nn.Module):
-    def __init__(self,):
+    def __init__(self):
         super(ResNet, self).__init__()
         self.inchannel = 64
         self.conv1 = nn.Sequential(

@@ -32,7 +32,7 @@ def draw_square_by_points(image, points, **params):
         params["thickness"] = 2
 
     for x, y in points:
-        image = cv2.line(image, (int(last_x), int(last_y)), (int(x), int(y)), params["color"], params["thickness"])
+        image = cv2.line(image.copy(), (int(last_x), int(last_y)), (int(x), int(y)), params["color"], params["thickness"])
         last_x, last_y = x, y
     return image
 
@@ -68,8 +68,7 @@ def get_area(square):
 def get_line_length(p1, p2):
     return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
 
-## The very rough estimation of union area
-def get_union_area(squareA, squareB):
+def estimate_union(squareA, squareB):
     points = np.array(squareA + squareB)
     x = max(points[:, 0]) - min(points[:, 0])
     y = max(points[:, 1]) - min(points[:, 1])
@@ -88,9 +87,17 @@ def get_union_area(squareA, squareB):
     cv2.imwrite("union.jpg", canvas)
     return cv2.countNonZero(canvas)
 
+def estimate_iou(square_A, square_B):
+    union = estimate_union(square_A, square_B)
+    area_A = get_area_by_points(square_A)
+    area_B = get_area_by_points(square_B)
+    total_area = area_A + area_B
+    if union > total_area:
+        return 1.0
+    return (total_area - union) / union
 
 ###########################################################################################################
-## precise calculation for union area
+## calculation for intersection area
 ##########################################################################################################
 def ccw(A,B,C):
     return (C[1]-A[1])*(B[0]-A[0]) > (B[1]-A[1])*(C[0]-A[0])
@@ -100,34 +107,38 @@ def intersect(A, B, C, D):
 
 ## calculate intersection point of two lines
 def get_intersection_point(point_1, point_2, point_3, point_4):
+    if not intersect(point_1, point_2, point_3, point_4):
+        return None
     x1, y1 = point_1
     x2, y2 = point_2
     x3, y3 = point_3
     x4, y4 = point_4
-    try:
-        x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4))
-        y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4))
-        if intersect(point_1, point_2, point_3, point_4):
-            return x, y
-        return None
-    except:
-        return None
+    
+    x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4))
+    y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)) 
+    return x, y
+        
 
 ## check if a point in a bounding box
 def is_point_in_bounding_box(point, points):
     x, y = point
-    
     tl, tr, br, bl = points
 
-    if (intersect((x, y), (x, min(tl[1], tr[1])-10), tl, tr) or intersect((x, y), (x, min(tr[1], br[1])-10), tr, br) or intersect((x, y), (x, min(br[1], bl[1])-10), br, bl) or intersect((x, y), (x, min(bl[1], tl[1])-10), bl, tl)) and \
-        (intersect((x, y), (x, max(tl[1], tr[1])+10), tl, tr) or intersect((x, y), (x, max(tr[1], br[1])+10), tr, br) or intersect((x, y), (x, max(br[1], bl[1])+10), br, bl) or intersect((x, y), (x, max(bl[1], tl[1])+10), bl, tl)) and \
-        (intersect((x, y), (max(tl[0], tr[0])+10, y), tl, tr) or intersect((x, y), (max(tr[0], br[0])+10, y), tr, br) or intersect((x, y), (max(br[0], bl[0])+10, y), br, bl) or intersect((x, y), (max(bl[0], tl[0])+10, y), bl, tl)) and \
-        (intersect((x, y), (min(tl[0], tr[0])-10, y), tl, tr) or intersect((x, y), (min(tr[0], br[0])-10, y), tr, br) or intersect((x, y), (min(br[0], bl[0])-10, y), br, bl) or intersect((x, y), (min(bl[0], tl[0])-10, y), bl, tl)):
+    if (intersect((x, y), (x, min(tl[1], tr[1])-1), tl, tr) or intersect((x, y), (x, min(tr[1], br[1])-1), tr, br) or intersect((x, y), (x, min(br[1], bl[1])-1), br, bl) or intersect((x, y), (x, min(bl[1], tl[1])-1), bl, tl)) and \
+        (intersect((x, y), (x, max(tl[1], tr[1])+1), tl, tr) or intersect((x, y), (x, max(tr[1], br[1])+1), tr, br) or intersect((x, y), (x, max(br[1], bl[1])+1), br, bl) or intersect((x, y), (x, max(bl[1], tl[1])+1), bl, tl)) and \
+        (intersect((x, y), (max(tl[0], tr[0])+1, y), tl, tr) or intersect((x, y), (max(tr[0], br[0])+1, y), tr, br) or intersect((x, y), (max(br[0], bl[0])+1, y), br, bl) or intersect((x, y), (max(bl[0], tl[0])+1, y), bl, tl)) and \
+        (intersect((x, y), (min(tl[0], tr[0])-1, y), tl, tr) or intersect((x, y), (min(tr[0], br[0])-1, y), tr, br) or intersect((x, y), (min(br[0], bl[0])-1, y), br, bl) or intersect((x, y), (min(bl[0], tl[0])-1, y), bl, tl)):
         return True
     
     return False
 
 def get_intersection_area_points(square_A, square_B):
+    canvas = np.zeros((1000, 1000, 3), np.uint8)
+    canvas = draw_square_by_points(canvas, square_A, color=(255, 255, 255), thickness=1)
+    canvas = draw_square_by_points(canvas, square_B, color=(255, 255, 255), thickness=1)
+    
+    cv2.imwrite("test1.jpg", canvas)
+
     ## check if one square is in another square
     A_in_B = []
     for point in square_A:
@@ -197,6 +208,28 @@ def get_intersection_area_points(square_A, square_B):
 
     inter_points = []
 
+    for i, p in enumerate(bound_points):
+        cv2.circle(canvas, (int(p[0]), int(p[1])), 5, (0, 0, 255), -1)
+        # cv2.putText(canvas, str(i), (int(p[0]), int(p[1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        cv2.putText(canvas, str(p), (int(p[0]), int(p[1])+20), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    cv2.imwrite("test2.jpg", canvas)
+    
+    print(lines)
+
+    single_line_points = []
+    for point, pos_lines in lines.items():
+        if len(pos_lines) == 1:
+            single_line_points.append(point)
+    
+    for i in range(len(single_line_points)):
+        for j in range(len(single_line_points)):
+            if i == j:
+                continue
+            lines[single_line_points[i]].add(single_line_points[j])
+            lines[single_line_points[j]].add(single_line_points[i])
+
+    print(lines)
+
     point = bound_points.pop()
     inter_points.append(point)
     while len(bound_points) > 0:
@@ -217,10 +250,14 @@ def get_intersection_area(square_A, square_B):
 
 ## calculate iou of two bounding boxes
 def get_iou(square_A, square_B):
-    total_area = int(get_area(square_A) + get_area(square_B))
+    total_area = int(get_area_by_points(square_A) + get_area_by_points(square_B))
     inter_area = int(get_intersection_area(square_A, square_B))
     union_area = total_area - inter_area
     if inter_area > union_area:
         raise Exception(f"Intersection area is greater than Union area. inter {inter_area}, union {union_area}")        
     return abs(inter_area / union_area)
 
+def get_area_fraction(square_A, square_B):
+    area_a = get_area_by_points(square_A)
+    area_b = get_area_by_points(square_B)
+    return area_a / area_b if area_a < area_b else area_b / area_a

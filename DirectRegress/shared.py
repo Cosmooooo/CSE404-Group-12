@@ -1,7 +1,7 @@
 import torch
 import os, sys
 from tqdm import tqdm
-from data.process import get_iou, get_bounding_box
+from common.process import get_iou, get_bounding_box
 from torchvision import transforms
 
 def train(model, device, train_loader, optimizer, epoch, validate=False, validation_loader=None):
@@ -87,7 +87,7 @@ def predict_image(model, image):
     return prediction[0]
             
 def l1_loss(p, l):
-    loss = torch.mean(torch.abs(p[:, 0] - l[:, 0]) + torch.abs(p[:, 1] - l[:, 1]) + torch.abs(p[:, 2] - l[:, 2]) + torch.abs(p[:, 3] - l[:, 3]))
+    loss = torch.mean(torch.abs(p[:, 0] - l[:, 0]) + torch.abs(p[:, 1] - l[:, 1]) + torch.abs(p[:, 2] - l[:, 2]) + torch.abs(p[:, 3]*50 - l[:, 3]*50))
     return loss
 
 def get_iou_score(prediction, label):

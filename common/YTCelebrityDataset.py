@@ -1,6 +1,6 @@
 from torch.utils.data import Dataset
 import os
-from data.data import get_frames
+from common.data import get_frames
 import csv
 
 ## Dataset for YTCelebrity dataset
