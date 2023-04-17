@@ -7,7 +7,19 @@ Team member:
 
 ### Run
 
-    python3 main.py --root <path-to-dataset> --model simplecnn --ckpt <path-to-checkpoint> --epoch 100 --validate True
+    python3 main.py
+
+Some options are provided for training
+
+    --batch-size <default 8> --epoch <default 100> --lr <default 1e-4>
+
+Some options for model
+
+    --model <can be choose from lenet, vgg, resnet, yolo, rcnn, fastrcnn> --ckpt <load model from a checkpoint>
+
+Some options for task
+
+    --mode <can be choose from train: for training model, test: test on test dataset, predict: predicted on a video> --save <associated with train mode, save trained checkpoint to this path> --file <associated with predict mode, the path to video file>
 
 
 ### Dataset

@@ -110,7 +110,7 @@ def predict_image(model, orig_image):
     bbox[:, 2] *= w
     bbox[:, 3] *= h
 
-    return orig_image, bbox.astype(np.int32)[0]
+    return orig_image, bbox.astype(np.int32)
 
 def load(ckpt):
     model = Yolo().to(device)
@@ -121,8 +121,9 @@ if __name__ == "__main__":
     model = Yolo().to(device)
     model.load_state_dict(torch.load("checkpoints/Yolo.pth"))   
     image = get_starting_frame("/media/cosmo/Dataset/YTCelebrity/ytcelebrity/0115_03_023_al_gore.avi")
-    image, bbox = predict_image(model, image)
-    image = cv2.rectangle(image, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 2)
+    image, bboxes = predict_image(model, image)
+    for bbox in bboxes:
+        image = cv2.rectangle(image, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 2)
     cv2.imshow("image", image)
     cv2.imwrite("Yolobackbone/example.jpg", image)
     cv2.waitKey(0)

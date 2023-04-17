@@ -136,3 +136,15 @@ def plot(title, sub_titles, train_result, validate_result):
         axs[i].legend()
 
     plt.savefig('results/{}.png'.format(title))
+
+def face_track(model, video):
+    video = cv2.VideoCapture(video)
+
+    if not video.isOpened():
+        raise Exception("Could not open video")
+    success,image = video.read()
+    count = 0
+    while success:
+        image, bbox = model.predict()
+        success,image = video.read()
+        count += 1
