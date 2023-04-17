@@ -1,9 +1,8 @@
-import cv2
 import os
+import cv2
 
 ## Save frames from video
 def save_frames(root, file, output_dir):
-    name = file.split(".")[0]
     if not os.path.exists(output_dir + file):
         os.makedirs(output_dir + file)
     video = cv2.VideoCapture(root+file)

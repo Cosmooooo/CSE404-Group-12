@@ -24,7 +24,8 @@ class VGG(nn.Module):
         self.block4 = VGGBlock(256, 512)
         self.block5 = VGGBlock(512, 512)
         self.flatten = nn.Flatten()
-        self.fc = nn.Linear(512 * 11 * 11, 4)
+        self.fc1 = nn.Linear(512 * 7 * 7, 1024)
+        self.fc2 = nn.Linear(1024, 4)
 
     def forward(self, x):
         x = self.block1(x)
@@ -33,5 +34,9 @@ class VGG(nn.Module):
         x = self.block4(x)
         x = self.block5(x)
         x = self.flatten(x)
-        x = self.fc(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
         return x
+    
+    def loss(self, pred, label):
+        return F.mse_loss(pred, label)

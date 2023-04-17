@@ -20,34 +20,27 @@ Dataset contains 1910 video clips of 47 subjects at 25 fps rate. Personals face 
 
 Dataset is splitted randomly as (0.6, 0.2, 0.2) with respect to training, validation and testing.
 
-We are using [IOU](data/process.py) score to evaluate bounding boxes differences, and l1 loss for weight update.
+We are using IOU score to evaluate bounding boxes differences, and l1 loss for weight update.
 
 IOU is calculated to be intersection area / union area of prediction and group truth bounding boxes. We expect IOU score to be as close to one as possible.
 
 L1 loss is calculated by l1 distance of four elements between prediction and label. We expect l1 loss to be as lower as possible.
 
-![Alt text](results/SimpleCNN.png)
+![Alt text](results/Fast-RCNN.png)
+Test Loss: 0.02892699152289424, Test Cls Loss: 0.028453037840032874, Test Reg Loss: 0.00047395382474254194 Test IOU: 0.4726517420659495
 
-Test IOU: 0.03165 Loss: 28.78139
-
-![Alt text](results/ResNet.png)
-
-Test IOU: 0.13269 Loss: 18.61234
-
-![Alt text](results/Yolo.png)
-
-Test IOU: 0.09364 Loss: 19.20259
-
-![Alt text](results/VGG.png)
-
-Test IOU: 0.15020 loss: 8.76502
+![Alt text](results/RCNN.png)
+Test Cls Loss: 0.02327281750573699, Test Reg Loss: 0.00010270591053540556 Test IOU: 0.4472824608741318
 
 ![Alt text](results/LeNet.png)
+Test Loss: 0.013357868786746016, Test IOU: 0.3368942222438499
 
-Test IOU: 0.13438 loss: 9.90049
+![Alt text](results/VGG.png)
+Test Loss: 0.0047431237702160916, Test IOU: 0.6036726302901254
 
-![Alt text](results/test.png)
+![Alt text](results/ResNet.png)
+Test Loss: 0.005739457199524622, Test IOU: 0.46172276784602495 
 
-### [Structure](structure.txt)
-
+![Alt text](results/Yolo.png)
+Test Loss: 0.00404532278177309, Test IOU: 0.7141984857165338 
 

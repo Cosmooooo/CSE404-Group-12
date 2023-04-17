@@ -38,7 +38,8 @@ class ResNet(nn.Module):
         self.layer3 = self.make_layer(ResBlock, 256, 2, stride=2)
         self.layer4 = self.make_layer(ResBlock, 512, 2, stride=2)
         self.flatten = nn.Flatten()
-        self.fc = nn.Linear(512 * 11 * 11, 4)
+        self.fc1 = nn.Linear(512 * 7 * 7, 1024)
+        self.fc2 = nn.Linear(1024, 4)
 
     def make_layer(self, block, channels, num_blocks, stride):
         strides = [stride] + [1] * (num_blocks - 1)
@@ -56,5 +57,9 @@ class ResNet(nn.Module):
         x = self.layer4(x)
         x = F.avg_pool2d(x, 4)
         x = self.flatten(x)
-        x = self.fc(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
         return x
+    
+    def loss(self, pred, label):
+        return F.mse_loss(pred, label)

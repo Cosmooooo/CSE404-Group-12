@@ -51,8 +51,10 @@ class Yolo(nn.Module):
         x = self.conv2(x)
         x = F.avg_pool2d(x, 4)
         x = self.conv3(x)
-        x = F.avg_pool2d(x, 4)
+        x = F.avg_pool2d(x, 2)
         x = self.flatten(x)
         x = self.fc(x)
         return x
-        
+    
+    def loss(self, pred, label):
+        return F.mse_loss(pred, label)
