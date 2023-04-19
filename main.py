@@ -12,6 +12,7 @@ import Resnet.utils as resnet
 import VGG.utils as vgg
 import LeNet.utils as lenet
 import Yolobackbone.utils as yolo
+import SimpleCNN.utils as simplecnn
 
 def get_parser(**params):
     def str_to_bool(s):
@@ -35,7 +36,7 @@ def get_parser(**params):
     parser.add_argument('--file', type=str, help="video file to predict")
 
     # load model
-    parser.add_argument('--model', type=str, default="lenet", help='model includes lenet, vgg, resnet, yolo, rcnn, fastrcnn')
+    parser.add_argument('--model', type=str, default="lenet", help='model includes simplecnn, lenet, vgg, resnet, yolo, rcnn, fastrcnn')
     parser.add_argument('--ckpt', type=str, default=None, help='load checkpoint path')
 
     parser.add_argument('--mode', type=str, default="train", help='task mode: train, test, predict')
@@ -52,7 +53,7 @@ def main():
     learning_rate = opt.lr
 
     def get_model_mode(s):
-        models = {"lenet": lenet, "vgg": vgg, "resnet": resnet, "yolo": yolo, "rcnn": rcnn, "fastrcnn": fast_rcnn}
+        models = {"simplecnn": simplecnn, "lenet": lenet, "vgg": vgg, "resnet": resnet, "yolo": yolo, "rcnn": rcnn, "fastrcnn": fast_rcnn}
         if s.lower() in models:
             return models[s.lower()]
         else:
@@ -84,7 +85,7 @@ def main():
     if mode == "train":
         model = model_mode.train(train_loader, validation_loader, optimizer, epoch, learning_rate)
         model_mode.test(model, test_loader)
-        torch.save(model.state_dict(), f"checkpoints/{model.__class__.__name__}.pth" if not opt.save_path else opt.save_path)
+        torch.save(model.state_dict(), f"checkpoints/{model.__class__.__name__}.pth" if not opt.save else opt.save)
 
     elif mode == "test":
         if opt.ckpt:
@@ -124,6 +125,7 @@ def main():
                 break
 
         video.release()
+        out.release()
         cv2.destroyAllWindows()
         
 main()

@@ -15,7 +15,7 @@ Some options are provided for training
 
 Some options for model
 
-    --model <can be choose from lenet, vgg, resnet, yolo, rcnn, fastrcnn> --ckpt <load model from a checkpoint>
+    --model <can be choose from simplecnn, lenet, vgg, resnet, yolo, rcnn, fastrcnn> --ckpt <load model from a checkpoint>
 
 Some options for task
 
@@ -43,6 +43,9 @@ Test Loss: 0.02892699152289424, Test Cls Loss: 0.028453037840032874, Test Reg Lo
 
 ![Alt text](results/RCNN.png)
 Test Cls Loss: 0.02327281750573699, Test Reg Loss: 0.00010270591053540556 Test IOU: 0.4472824608741318
+
+![Alt text](results/SimpleCNN.png)
+Test Loss: 0.010950345623617372, Test IOU: 0.3768567297984334 
 
 ![Alt text](results/LeNet.png)
 Test Loss: 0.013357868786746016, Test IOU: 0.3368942222438499
